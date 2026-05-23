@@ -2,176 +2,118 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chermash Pay</title>
-    <!-- Подключаем библиотеку для работы с камерой -->
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <title>Генератор номера</title>
     <style>
-        :root {
-            --bg-black: #0b0b0b;
-            --card-gray: #1c1c1e;
-            --text-gray: #8e8e93;
-            --accent-yellow: #ffdd2d;
-            --accent-blue: #007aff;
+        body { 
+            background: linear-gradient(180deg, #1e2025 0%, #111215 100%); 
+            display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; min-height: 100vh; margin: 0; 
+            font-family: Arial, sans-serif; color: white;
         }
 
-        body {
-            margin: 0;
-            background: var(--bg-black);
-            font-family: -apple-system, sans-serif;
-            color: white;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
+        .header-text { text-align: center; margin-bottom: 20px; text-transform: uppercase; }
+        .header-text h1 { font-size: 24px; margin: 0; color: #fff; }
+        .header-text p { font-size: 14px; margin: 5px 0 20px; color: #aaa; }
+
+        .wrapper { 
+            position: relative; width: 680px; height: 140px; 
+            filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.8));
+        }
+        
+        .frame-img { width: 100%; height: 100%; position: absolute; z-index: 1; pointer-events: none; }
+
+        #main { 
+            position: absolute; left: 10px; top: 7px;
+            width: 500px; height: 125px; 
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2; overflow: hidden;
         }
 
-        .main-screen {
-            position: relative;
-            width: 100%;
-            max-width: 430px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
+        .slot { width: 75px; height: 125px; position: relative; overflow: hidden; }
+        .track { position: absolute; top: 0; width: 100%; }
+        
+        .char { 
+            height: 125px; display: flex; align-items: center; justify-content: center; 
+            font-family: sans-serif; font-size: 95px; font-weight: 800; color: #000;
         }
 
-        /* Название фото теперь "чермашка" */
-        .chermash-logo {
-            width: 85%;
-            max-width: 320px;
-            border-radius: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        .region-input {
+            position: absolute; right: 40px; top: 15px;
+            width: 120px; height: 70px;
+            border: none; background: transparent;
+            font-family: Arial, sans-serif; font-size: 60px; 
+            font-weight: 800; text-align: center; color: #000; 
+            outline: none; z-index: 3; padding: 0;
         }
 
-        h1 {
-            font-size: 32px;
-            font-weight: 900;
-            margin-bottom: 50px;
-            letter-spacing: 2px;
-        }
+        .prize-text { margin-top: 30px; font-weight: 800; font-size: 24px; text-transform: uppercase; }
 
-        .qr-button {
-            background: var(--accent-yellow);
-            color: black;
-            border: none;
-            padding: 22px 45px;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(255, 221, 45, 0.4);
-            transition: transform 0.2s;
+        .btn { 
+            margin-top: 20px; padding: 15px 50px; font-size: 20px; 
+            background: #d80000; color: #fff; border: none; 
+            cursor: pointer; border-radius: 5px; transition: 0.3s; font-weight: bold;
         }
-
-        .qr-button:active {
-            transform: scale(0.92);
-        }
-
-        /* Стили сканера */
-        #scanner-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: black;
-            z-index: 999;
-            display: none;
-            flex-direction: column;
-        }
-
-        #reader {
-            width: 100%;
-            height: 100%;
-        }
-
-        .close-scanner {
-            position: absolute;
-            top: 50px;
-            right: 20px;
-            background: rgba(255,255,255,0.25);
-            backdrop-filter: blur(10px);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            z-index: 1000;
-        }
+        .btn:hover { background: #ff0000; }
+        .btn:disabled { background: #555; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
-    <div class="main-screen">
-        <!-- Используем фото "чермашка" -->
-        <img src="чермашка.jpg" alt="Чермаш" class="chermash-logo">
-        <h1>ЧЕРМАШ</h1>
-
-        <button class="qr-button" onclick="startScanner()">
-            📷 СКАНЕР QR
-        </button>
+    <div class="header-text">
+        <h1>Автомобильных номеров</h1>
+        <p>Вы можете изменить регион получаемых номеров</p>_______________________________________________________________________
     </div>
 
-    <!-- Полноэкранный сканер -->
-    <div id="scanner-container">
-        <button class="close-scanner" onclick="stopScanner()">Закрыть</button>
-        <div id="reader"></div>
+    <div class="wrapper">
+        <img src="https://cdn.nomerhub.ru/numbers_templates/car_default.svg" class="frame-img">
+        <div id="main"></div>
+        <input type="text" class="region-input" value="99" maxlength="3" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
     </div>
+
+    <div class="prize-text">____________________________________________________</div>
+
+    <button class="btn" id="go">ГЕНЕРИРОВАТЬ</button>
 
     <script>
-        let html5QrCode;
+        const L = ['А', 'В', 'Е', 'К', 'М', 'Н', 'О', 'Р', 'С', 'Т', 'У', 'Х'];
+        const D = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+        const main = document.getElementById('main');
+        const pattern = [L, D, D, D, L, L];
 
-        async function startScanner() {
-            // Показываем контейнер сканера
-            document.getElementById('scanner-container').style.display = 'flex';
-            
-            html5QrCode = new Html5Qrcode("reader");
-            
-            const config = { 
-                fps: 20, // Частота кадров
-                qrbox: { width: 280, height: 280 } // Рамка сканирования
-            };
+        // Создаем слоты
+        pattern.forEach(() => {
+            const d = document.createElement('div');
+            d.className = 'slot';
+            d.innerHTML = `<div class="track"><div class="char">?</div></div>`;
+            main.appendChild(d);
+        });
 
-            try {
-                await html5QrCode.start(
-                    { facingMode: "environment" }, // Используем заднюю камеру
-                    config,
-                    (decodedText) => {
-                        // ДЕЙСТВИЕ ПРИ УСПЕХЕ:
-                        stopScanner();
-                        
-                        // Если в QR зашита ссылка — мгновенно переходим по ней
-                        if (decodedText.startsWith('http')) {
-                            window.location.href = decodedText;
-                        } else {
-                            // Если просто текст — выводим его
-                            alert("Сканировано: " + decodedText);
-                        }
-                    }
-                );
-            } catch (err) {
-                console.error("Ошибка камеры:", err);
-                alert("Не удалось включить камеру. Проверьте разрешения.");
-                stopScanner();
-            }
-        }
+        document.getElementById('go').onclick = function() {
+            this.disabled = true;
+            document.querySelectorAll('.track').forEach((t, i) => {
+                const pool = pattern[i];
+                const final = pool[Math.floor(Math.random()*pool.length)];
+                let html = '';
+                // Генерируем "крутящиеся" символы
+                for(let j=0; j<20; j++) html += `<div class="char">${pool[Math.floor(Math.random()*pool.length)]}</div>`;
+                html += `<div class="char">${final}</div>`;
+                
+                t.innerHTML = html;
+                t.style.transition = 'none';
+                t.style.transform = 'translateY(0)';
+                
+                setTimeout(() => {
+                    t.style.transition = `transform ${1.5 + i*0.1}s cubic-bezier(0.1,0.5,0.2,1)`;
+                    t.style.transform = `translateY(-${20 * 125}px)`;
+                }, 50);
 
-        function stopScanner() {
-            if (html5QrCode) {
-                html5QrCode.stop().then(() => {
-                    document.getElementById('scanner-container').style.display = 'none';
-                }).catch(() => {
-                    document.getElementById('scanner-container').style.display = 'none';
-                });
-            } else {
-                document.getElementById('scanner-container').style.display = 'none';
-            }
-        }
+                setTimeout(() => {
+                    t.innerHTML = `<div class="char">${final}</div>`;
+                    t.style.transform = 'translateY(0)';
+                    if(i === 5) document.getElementById('go').disabled = false;
+                }, 1600 + i*100);
+            });
+        };
     </script>
 </body>
 </html>
