@@ -90,28 +90,35 @@
 
         document.getElementById('go').onclick = function() {
             this.disabled = true;
-            document.querySelectorAll('.track').forEach((t, i) => {
+            const tracks = document.querySelectorAll('.track');
+            
+            tracks.forEach((t, i) => {
                 const pool = pattern[i];
-                const final = pool[Math.floor(Math.random()*pool.length)];
-                let html = '';
+                const final = pool[Math.floor(Math.random() * pool.length)];
+                
                 // Генерируем "крутящиеся" символы
-                for(let j=0; j<20; j++) html += `<div class="char">${pool[Math.floor(Math.random()*pool.length)]}</div>`;
+                let html = '';
+                for(let j = 0; j < 20; j++) {
+                    html += `<div class="char">${pool[Math.floor(Math.random() * pool.length)]}</div>`;
+                }
                 html += `<div class="char">${final}</div>`;
                 
                 t.innerHTML = html;
                 t.style.transition = 'none';
                 t.style.transform = 'translateY(0)';
                 
+                // Запуск анимации
                 setTimeout(() => {
-                    t.style.transition = `transform ${1.5 + i*0.1}s cubic-bezier(0.1,0.5,0.2,1)`;
+                    t.style.transition = `transform ${1.5 + i * 0.1}s cubic-bezier(0.1, 0.5, 0.2, 1)`;
                     t.style.transform = `translateY(-${20 * 125}px)`;
                 }, 50);
 
+                // Ожидание завершения анимации без изменения HTML
                 setTimeout(() => {
-                    t.innerHTML = `<div class="char">${final}</div>`;
-                    t.style.transform = 'translateY(0)';
-                    if(i === 5) document.getElementById('go').disabled = false;
-                }, 1600 + i*100);
+                    if(i === 5) {
+                        document.getElementById('go').disabled = false;
+                    }
+                }, 1600 + i * 100);
             });
         };
     </script>
